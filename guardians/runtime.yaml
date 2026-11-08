@@ -1,0 +1,12 @@
+listen: 0.0.0.0:7410
+sessionsDir: /var/lib/meerkat-guardians/sessions
+checkoutsDir: /var/lib/meerkat-guardians/checkouts
+omp:
+  bin: omp
+  agentDir: /var/lib/meerkat-guardians/omp
+  extension: /opt/meerkat-guardians/plugin/index.ts
+  readyTimeoutSeconds: 120
+  exitGraceSeconds: 30
+maxContinuePrompts: 50
+sessionTimeoutSeconds: 300
+maxConcurrentWarmups: 2

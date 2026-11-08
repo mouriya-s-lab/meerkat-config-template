@@ -1,0 +1,48 @@
+config:
+  repo: <owner>/<config-repo>
+  branch: main
+  readers:
+    council/: [council]
+    guardians/: [guardians]
+    meerkat/: [meerkat]
+    dispatch/: [dispatch]
+    shared/: [council, guardians, meerkat, dispatch]
+targets:
+  macos:
+    githubApi: https://api.github.com
+    council: http://<host>:7421
+    guardians: http://<host>:7410
+    dispatch: http://127.0.0.1:47593
+  web:
+    githubApi: http://<host>:8088/gh
+    council: http://<host>:8088/council
+    guardians: http://<host>:8088/guardians
+    dispatch: http://<host>:8088/dispatch
+refreshSeconds: 30
+attention:
+  sessionFailureHours: 24
+  rateLimitPercent: 10
+digest:
+  keepTools:
+    # council plugin
+    - pm_draft
+    - pm_vote
+    - pm_ruling
+    - pm_read_issue
+    - pm_proxy_read
+    # guardians plugin
+    - pm_base_ready
+    - pm_return_facts
+    - pm_reply
+    - pm_replace
+    - pm_escalate
+  foldTools:
+    - read
+    - grep
+    - glob
+  showAssistantText: true
+  maxBytes: 8000000
+filters:
+  hideDecided: true
+  humanOnly: false
+appearance: system

@@ -1,0 +1,30 @@
+# Komodo Stack `meerkat-web` on the Docker host `<host>`.
+#
+# The image is built and loaded onto the host by scripts/release.sh; it is never pulled. It carries
+# Meerkat's web build, Meerkat's Caddyfile and the token, no config: this checkout's meerkat/ and
+# shared/ are mounted read-only under /config (CONFIG_DIR), which the site fetches when a page
+# starts, so a config change takes effect on the next redeploy and reload without a rebuild.
+# Browsers open http://<host>:8088/, the origin meerkat/meerkat.yaml `targets.web`
+# names. The proxy passes GitHub reads, and of the writes only a contents PUT to CONFIG_REPO;
+# /council/* and /guardians/* go to the two programs on this host, /dispatch/* to the operator
+# Mac's omp-dispatch config check listener on the mesh.
+
+services:
+  web:
+    image: meerkat-local/meerkat-web:current
+    pull_policy: never
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      LISTEN: ":8088"
+      CONFIG_DIR: /config
+      CONFIG_REPO: <owner>/<config-repo>
+      COUNCIL_URL: http://host.docker.internal:7421
+      GUARDIANS_URL: http://host.docker.internal:7410
+      DISPATCH_URL: http://<operator-mac-address>:47593
+    volumes:
+      - ../../meerkat:/config/meerkat:ro
+      - ../../shared:/config/shared:ro

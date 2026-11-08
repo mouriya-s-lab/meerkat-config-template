@@ -1,0 +1,8 @@
+pm:
+  repo: <owner>/<agenda-repo>
+  project: { owner: <owner>, number: <project-number> }
+code:
+  - repo: <owner>/<code-repo>
+    cwd: <code-repo-checkout-on-operator-mac>
+design: [<owner>/<design-repo>]
+omp: []

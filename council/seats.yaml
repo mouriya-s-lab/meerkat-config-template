@@ -1,0 +1,21 @@
+seats:
+  - id: Coordination
+    prompt: omp/prompts/Coordination.md
+    tools: [read, grep, glob]
+    model: <model>
+    rights: [draft, vote]
+  - id: ClaudeHigh
+    prompt: omp/prompts/ClaudeHigh.md
+    tools: [read, grep, glob]
+    model: <model>
+    rights: [vote]
+  - id: Argon
+    prompt: omp/prompts/Argon.md
+    tools: [read, grep, glob]
+    model: <model>
+    rights: [vote, veto]
+  - id: LeadMentor
+    prompt: omp/prompts/LeadMentor.md
+    tools: [read, grep, glob]
+    model: <model>
+    rights: [vote, arbitrate]

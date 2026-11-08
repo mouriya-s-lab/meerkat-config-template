@@ -1,0 +1,26 @@
+# Komodo Stack `meerkat-guardians` on the Docker host `<host>`.
+#
+# The image is built and loaded onto the host by scripts/release.sh; it is never pulled. The config
+# tree of this checkout is mounted read-only; the only state kept across redeploys is the omp
+# session files and the repository checkouts.
+# Port 7410 serves the guardians API to the LAN/mesh, the council daemon (host-gateway) and
+# omp-dispatch on the operator Mac.
+
+services:
+  guardians:
+    image: meerkat-local/meerkat-guardians:current
+    pull_policy: never
+    restart: unless-stopped
+    # Docker's init is PID 1 and reaps git processes orphaned by the omp sessions and checkouts.
+    init: true
+    ports:
+      - "7410:7410"
+    volumes:
+      - ../../guardians:/config/guardians:ro
+      - ../../shared:/config/shared:ro
+      - sessions:/var/lib/meerkat-guardians/sessions
+      - checkouts:/var/lib/meerkat-guardians/checkouts
+
+volumes:
+  sessions:
+  checkouts:

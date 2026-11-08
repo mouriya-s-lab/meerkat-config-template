@@ -1,0 +1,56 @@
+# Komodo Stack `meerkat-council` on the Docker host `<host>`.
+#
+# Images are built and loaded onto the host by scripts/release.sh; they are never pulled. The config
+# tree of this checkout is mounted read-only; the only state kept across redeploys is the omp
+# session files and the PM repository checkout.
+#
+# - daemon: agenda queue and panels; port 7421 serves its API to the LAN/mesh and to Meerkat.
+#   It reaches meerkat-guardians on this host through host.docker.internal:7410.
+# - app: the GitHub webhook endpoint (POST /webhook on 7420), reachable only on this project's
+#   network; it forwards events to http://daemon:7421.
+# - tunnel: connector of a Cloudflare tunnel that routes
+#   https://<council-hook-hostname>/webhook to http://app:7420.
+#
+# Do not run this Stack while a `gh webhook forward` session watches the PM repository.
+
+services:
+  daemon:
+    image: meerkat-local/meerkat-council:current
+    pull_policy: never
+    restart: unless-stopped
+    # Docker's init is PID 1 and reaps git processes orphaned by the omp sessions and checkouts.
+    init: true
+    command: ["daemon"]
+    # Longer than council/runtime.yaml daemon.shutdownTimeoutSeconds (15) plus the 5 s HTTP shutdown,
+    # so a stop records the sessions it ends before Docker sends SIGKILL.
+    stop_grace_period: 30s
+    ports:
+      - "7421:7421"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ../../council:/config/council:ro
+      - ../../shared:/config/shared:ro
+      - sessions:/var/lib/meerkat-council/sessions
+      - checkouts:/var/lib/meerkat-council/checkouts
+
+  app:
+    image: meerkat-local/meerkat-council:current
+    pull_policy: never
+    restart: unless-stopped
+    init: true
+    command: ["app"]
+    volumes:
+      - ../../council:/config/council:ro
+      - ../../shared:/config/shared:ro
+
+  tunnel:
+    image: meerkat-local/meerkat-council-tunnel:current
+    pull_policy: never
+    restart: unless-stopped
+    depends_on:
+      - app
+
+volumes:
+  sessions:
+  checkouts:

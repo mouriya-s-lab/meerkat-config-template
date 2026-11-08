@@ -1,0 +1,19 @@
+app:
+  listen: 0.0.0.0:7420
+  webhookSecretFile: /etc/pm/webhook-secret
+  daemonURL: http://daemon:7421
+daemon:
+  listen: 0.0.0.0:7421
+  rebuildIntervalSeconds: 300
+  shutdownTimeoutSeconds: 15
+sessionsDir: /var/lib/meerkat-council/sessions
+checkoutDir: /var/lib/meerkat-council/checkouts
+guardiansURL: http://host.docker.internal:7410
+omp:
+  executable: omp
+  agentDir: /var/lib/meerkat-council/omp
+  extension: /opt/meerkat-council/plugin/index.ts
+  readyTimeoutSeconds: 120
+  exitGraceSeconds: 30
+maxContinuePrompts: 50
+sessionTimeoutSeconds: 300

@@ -1,0 +1,10 @@
+bases:
+  - guardian: product-opus
+    repo: <owner>/<code-repo>
+    branch: main
+    models: [<model>]
+    focus: 入口文件、命令行参数与数据存储的位置
+  - guardian: product-opus
+    repo: <owner>/<design-repo>
+    branch: main
+    models: [<model>]

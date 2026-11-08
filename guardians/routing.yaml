@@ -1,0 +1,7 @@
+routes:
+  - repo: <owner>/<code-repo>
+    guardian: product-opus
+    tiers: { simple: <model>, complex: <model> }
+  - repo: <owner>/<design-repo>
+    guardian: product-opus
+    tiers: { simple: <model>, complex: <model> }
