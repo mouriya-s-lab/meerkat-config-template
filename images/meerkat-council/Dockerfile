@@ -9,14 +9,14 @@ RUN apt-get update \
 ADD --chmod=0755 https://github.com/can1357/oh-my-pi/releases/latest/download/omp-linux-x64 /usr/local/bin/omp
 # prepare-omp-dir.sh needs mikefarah yq v4; Debian's `yq` package is a different tool.
 ADD --chmod=0755 https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 /usr/local/bin/yq
-# The panel checkout clones https://github.com/<pm repo>.git and relies on a credential helper.
+# The panel checkout clones https://github.com/<owner>/<agenda-repo>.git and relies on a credential helper.
 RUN git config --system credential.https://github.com.helper '!gh auth git-credential'
 COPY --chmod=0755 meerkat-council /usr/local/bin/meerkat-council
 COPY plugin/ /opt/meerkat-council/plugin/
 COPY --chmod=0755 prepare-omp-dir.sh /opt/meerkat-council/scripts/prepare-omp-dir.sh
-COPY --chmod=0755 entrypoint.sh /usr/local/bin/pm-entrypoint
+COPY --chmod=0755 entrypoint.sh /usr/local/bin/meerkat-entrypoint
 COPY --chmod=0600 agent.db models.yml /root/.omp/agent/
-COPY --chmod=0600 gh-token webhook-secret /etc/pm/
+COPY --chmod=0600 gh-token webhook-secret /etc/meerkat/
 WORKDIR /var/lib/meerkat-council
 EXPOSE 7420 7421
-ENTRYPOINT ["/usr/local/bin/pm-entrypoint"]
+ENTRYPOINT ["/usr/local/bin/meerkat-entrypoint"]

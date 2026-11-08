@@ -1,7 +1,7 @@
 #!/bin/bash
 # Builds the deployed instance's images on this machine and loads them onto the Docker host
-# $PM_RELEASE_HOST (an ssh destination); no registry is involved: images reach the host by
-# `docker save | ssh $PM_RELEASE_HOST docker load`.
+# $MEERKAT_RELEASE_HOST (an ssh destination); no registry is involved: images reach the host by
+# `docker save | ssh $MEERKAT_RELEASE_HOST docker load`.
 #
 # usage: scripts/release.sh [--load-only] <stack>...
 #   meerkat-guardians   image meerkat-local/meerkat-guardians:current
@@ -9,8 +9,8 @@
 #   meerkat-web         image meerkat-local/meerkat-web:current
 #
 # Program sources are the implementation repositories' origin/main, exported from local clones
-# under $PM_SRC_ROOT (default: the directory holding this repository's main checkout); Meerkat's
-# clone is $PM_SRC_ROOT/meerkat (mouriya-s-lab/meerkat). The meerkat-web image holds no PM config:
+# under $MEERKAT_SRC_ROOT (default: the directory holding this repository's main checkout); Meerkat's
+# clone is $MEERKAT_SRC_ROOT/meerkat (mouriya-s-lab/meerkat). The meerkat-web image holds no Meerkat config:
 # its Stack mounts meerkat/ and shared/ at run time.
 # Credentials are copied from this machine into a staging context under /tmp that is removed on
 # exit:
@@ -41,7 +41,7 @@ done
 [ -n "$stacks" ] || usage
 
 repo=$(cd "$(dirname "$0")/.." && pwd)
-host=${PM_RELEASE_HOST:?set PM_RELEASE_HOST to the ssh destination of the Docker host}
+host=${MEERKAT_RELEASE_HOST:?set MEERKAT_RELEASE_HOST to the ssh destination of the Docker host}
 omp_dir=$HOME/.omp/agent
 cfg_dir=$HOME/.config/meerkat-config
 meerkat_cache=${XDG_CACHE_HOME:-$HOME/.cache}/meerkat-config/meerkat
@@ -94,7 +94,7 @@ gh auth token >/dev/null || {
 
 common=$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir)
 main_checkout=${common%/*}
-src_root=${PM_SRC_ROOT:-${main_checkout%/*}}
+src_root=${MEERKAT_SRC_ROOT:-${main_checkout%/*}}
 config_rev=$(git -C "$repo" rev-parse HEAD)
 
 stage=$(mktemp -d /tmp/meerkat-config-build.XXXXXX)
@@ -160,7 +160,7 @@ release_council() {
 	build_load meerkat-council-tunnel "$tctx"
 }
 
-# release_meerkat_web: Meerkat's web build, its Caddyfile and the gh token; no PM config.
+# release_meerkat_web: Meerkat's web build, its Caddyfile and the gh token; no Meerkat config.
 # The source is exported afresh at a fixed path under $meerkat_cache and compiled into
 # $meerkat_cache/target, which outlives the release, so a release recompiles only what changed
 # since the last one instead of every dependency (nsh's cargo honours CARGO_TARGET_DIR).

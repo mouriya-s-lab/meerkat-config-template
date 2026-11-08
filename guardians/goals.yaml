@@ -1,13 +1,13 @@
 base:
-  tools: [pm_base_ready]
+  tools: [meerkat_base_ready]
   opening: |
     你现在为仓库 {{.Repo}}（分支 {{.Branch}}）做准备：工作目录就是该仓库的检出。
     通读仓库：目录结构、入口、主要模块、配置与设计文档，记住各部分所在的文件与行号，以便之后回答问题时直接引用。
     {{if .Focus}}重点留意：{{.Focus}}
-    {{end}}读完后调用 pm_base_ready，summary 写这个仓库是什么、主要部分在哪些路径。
-  continue: 你还没有调用 pm_base_ready。继续读仓库，读完后调用 pm_base_ready 结束本任务。
+    {{end}}读完后调用 meerkat_base_ready，summary 写这个仓库是什么、主要部分在哪些路径。
+  continue: 你还没有调用 meerkat_base_ready。继续读仓库，读完后调用 meerkat_base_ready 结束本任务。
 proxy:
-  tools: [pm_return_facts]
+  tools: [meerkat_return_facts]
   opening: |
     议会席位 {{.Seat}} 在审议议题 {{.Agenda}} 时，请你代读仓库 {{.Repo}}，回答下面的问题：
 
@@ -15,10 +15,10 @@ proxy:
 
     只依据仓库里的内容作答。这个会话之前已通读过该仓库，读到的内容都在上下文里：先依据上下文作答，只有上下文里没有的内容才再去读仓库，不重读已读过的文件。
     事实写成不超过 12 条，每条一行，注明仓库内相对路径与行号，或设计书的章节。
-    答完调用 pm_return_facts，facts 写全部事实（markdown）；这是结束本任务的唯一方式。
-  continue: 你还没有调用 pm_return_facts。不再读仓库，把已查到的事实写成不超过 12 条、每条一行并带路径与行号，交给 pm_return_facts 结束本任务。
+    答完调用 meerkat_return_facts，facts 写全部事实（markdown）；这是结束本任务的唯一方式。
+  continue: 你还没有调用 meerkat_return_facts。不再读仓库，把已查到的事实写成不超过 12 条、每条一行并带路径与行号，交给 meerkat_return_facts 结束本任务。
 query:
-  tools: [pm_reply, pm_replace, pm_escalate]
+  tools: [meerkat_reply, meerkat_replace, meerkat_escalate]
   opening: |
     正在实现 issue {{.Issue}}「{{.IssueTitle}}」的工人提出了一个决策询问（档位 {{.Tier}}），请你作为该仓库的守护者了结它。
 
@@ -31,8 +31,8 @@ query:
     {{.Question}}
 
     先依据仓库内容与 issue 正文判断，再按下面的顺序逐条检查，选第一条成立的方式了结询问：
-    1. pm_escalate：需要议会决策（涉及产品方向、跨仓库，或与设计书、该 issue 所依据的决策相冲突），把它提为 PM 仓库里的议题，title 写议题标题，body 写需要议会决定什么及其背景。
-    2. pm_replace：实现 issue 正文本身不是可执行、可验收的要求（例如正文只有一个待裁决的问题），或答复会改写正文已写下的要求。即使仓库足以回答询问，也以新的实现 issue 取代它，不用答复代替：title 写新标题，body 第一段写取代理由，之后写依据答复要做的改动与验收方式。
-    3. pm_reply：issue 正文已写明可执行的要求，询问只在这些要求之内选定细节，且仓库与 issue 足以决定，直接答复工人，body 写答复（含依据的路径与行号）。
+    1. meerkat_escalate：需要议会决策（涉及产品方向、跨仓库，或与设计书、该 issue 所依据的决策相冲突），把它提为议程仓库里的议题，title 写议题标题，body 写需要议会决定什么及其背景。
+    2. meerkat_replace：实现 issue 正文本身不是可执行、可验收的要求（例如正文只有一个待裁决的问题），或答复会改写正文已写下的要求。即使仓库足以回答询问，也以新的实现 issue 取代它，不用答复代替：title 写新标题，body 第一段写取代理由，之后写依据答复要做的改动与验收方式。
+    3. meerkat_reply：issue 正文已写明可执行的要求，询问只在这些要求之内选定细节，且仓库与 issue 足以决定，直接答复工人，body 写答复（含依据的路径与行号）。
     调用其中一个工具是结束本任务的唯一方式。
-  continue: 你还没有了结这个询问。调用 pm_reply、pm_replace 或 pm_escalate 之一结束本任务。
+  continue: 你还没有了结这个询问。调用 meerkat_reply、meerkat_replace 或 meerkat_escalate 之一结束本任务。

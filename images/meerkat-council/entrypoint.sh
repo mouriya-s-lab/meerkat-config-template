@@ -4,13 +4,13 @@
 set -eu
 case "${1:-}" in
 daemon)
-	GH_TOKEN=$(cat /etc/pm/gh-token)
+	GH_TOKEN=$(cat /etc/meerkat/gh-token)
 	export GH_TOKEN
 	/opt/meerkat-council/scripts/prepare-omp-dir.sh /config
 	;;
 app) ;;
 *)
-	echo "usage: pm-entrypoint app|daemon" >&2
+	echo "usage: meerkat-entrypoint app|daemon" >&2
 	exit 2
 	;;
 esac

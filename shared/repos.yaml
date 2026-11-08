@@ -1,4 +1,4 @@
-pm:
+agenda:
   repo: <owner>/<agenda-repo>
   project: { owner: <owner>, number: <project-number> }
 code:

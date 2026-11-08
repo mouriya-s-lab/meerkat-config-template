@@ -9,7 +9,7 @@ Meerkat 部署实例的配置仓库模板：议会（[meerkat-council](https://g
 | 占位 | 含义 | 出现位置 |
 |---|---|---|
 | `<owner>` | 议题、代码、设计与配置仓库所在的 GitHub owner | `shared/repos.yaml`、`guardians/bases.yaml`、`guardians/routing.yaml`、`meerkat/meerkat.yaml`、`stacks/meerkat-web/compose.yaml` |
-| `<agenda-repo>` | 议会读写议题的 PM 仓库 | `shared/repos.yaml` |
+| `<agenda-repo>` | 议会读写议题的议程仓库 | `shared/repos.yaml` |
 | `<project-number>` | `<owner>` 下承载议题的 GitHub Project 编号，字段见 `shared/project.yaml` | `shared/repos.yaml` |
 | `<code-repo>`、`<design-repo>` | 守护者代读的代码仓库与设计仓库 | `shared/repos.yaml`、`guardians/bases.yaml`、`guardians/routing.yaml` |
 | `<code-repo-checkout-on-operator-mac>` | 代码仓库在操作员 Mac 上的检出目录，omp-dispatch 在这里启动实现会话 | `shared/repos.yaml` |
@@ -28,8 +28,8 @@ Meerkat 部署实例的配置仓库模板：议会（[meerkat-council](https://g
 | `shared/` | `repos.yaml`、`project.yaml` | 所有程序 |
 | `council/` | 委员会配置、席位与 omp 提示词 | meerkat-council |
 | `guardians/` | 守护者配置、路由与 omp 提示词 | meerkat-guardians |
-| `meerkat/` | `meerkat.yaml`（配置仓库与读者、各端地址、刷新与筛选）、`theme.json`（设计 token） | Meerkat（macOS 版以 `PM_CONFIG_DIR` 指向实例仓库检出；web 版由 Stack 挂载） |
-| `dispatch/` | 交付设置 | omp-dispatch（插件设置 `pmConfigDir` 指向实例仓库检出，`omp plugin config set omp-dispatch pmConfigDir <path>`） |
+| `meerkat/` | `meerkat.yaml`（配置仓库与读者、各端地址、刷新与筛选）、`theme.json`（设计 token） | Meerkat（macOS 版以 `MEERKAT_CONFIG_DIR` 指向实例仓库检出；web 版由 Stack 挂载） |
+| `dispatch/` | 交付设置 | omp-dispatch（插件设置 `meerkatConfigDir` 指向实例仓库检出，`omp plugin config set omp-dispatch meerkatConfigDir <path>`） |
 | `stacks/<stack>/compose.yaml` | Stack `meerkat-guardians`、`meerkat-council`、`meerkat-web` | Komodo |
 | `images/<image>/` | 各镜像的 Dockerfile 与 entrypoint | `scripts/release.sh` |
 
@@ -50,14 +50,14 @@ Meerkat 的配置页把改动提交到实例仓库 main（`config.repo`、`confi
 ## 发布
 
 ```sh
-PM_RELEASE_HOST=<ssh 目标> KM_PROFILE=<km profile> scripts/release.sh [--load-only] meerkat-guardians meerkat-council meerkat-web
+MEERKAT_RELEASE_HOST=<ssh 目标> KM_PROFILE=<km profile> scripts/release.sh [--load-only] meerkat-guardians meerkat-council meerkat-web
 ```
 
-在操作员 Mac 上运行：从实现仓库 `origin/main` 构建镜像，带凭据的镜像经 `docker save | ssh $PM_RELEASE_HOST docker load` 直达 Docker 主机，不经 registry；不带 `--load-only` 时随后用 `km x deploy-stack` 重新部署对应 Stack（`KM_PROFILE` 未设时用 km 的默认 profile）。缺少凭据文件或构建工具时在构建前退出并列出缺少的项。
+在操作员 Mac 上运行：从实现仓库 `origin/main` 构建镜像，带凭据的镜像经 `docker save | ssh $MEERKAT_RELEASE_HOST docker load` 直达 Docker 主机，不经 registry；不带 `--load-only` 时随后用 `km x deploy-stack` 重新部署对应 Stack（`KM_PROFILE` 未设时用 km 的默认 profile）。缺少凭据文件或构建工具时在构建前退出并列出缺少的项。
 
 三个 Stack 在 Komodo 里各自声明，`run_directory` 指向实例仓库检出里的 `stacks/<stack>`。要让实例仓库 main 的每次 push 自动重新部署，给实例仓库加一个 push webhook，指向对这三个 Stack 执行 DeployStackIfChanged 的 Komodo Procedure。
 
-实现仓库默认取实例仓库主 checkout 所在目录下的同名 clone（`meerkat-guardians`、`meerkat-council`、`meerkat`），`PM_SRC_ROOT` 可改。`meerkat-web` 用 `nsh package --target web` 构建站点（需要 Homebrew llvm 与 `wasm-bindgen`，见 Meerkat 的 README），镜像标签记下 Meerkat 的提交（`org.opencontainers.image.revision`）与实例仓库的提交（`meerkat-config.revision`）。
+实现仓库默认取实例仓库主 checkout 所在目录下的同名 clone（`meerkat-guardians`、`meerkat-council`、`meerkat`），`MEERKAT_SRC_ROOT` 可改。`meerkat-web` 用 `nsh package --target web` 构建站点（需要 Homebrew llvm 与 `wasm-bindgen`，见 Meerkat 的 README），镜像标签记下 Meerkat 的提交（`org.opencontainers.image.revision`）与实例仓库的提交（`meerkat-config.revision`）。
 
 `meerkat-web` 的编译缓存在 `${XDG_CACHE_HOME:-~/.cache}/meerkat-config/meerkat`：`src/` 是每次发布重新导出的 Meerkat `origin/main`，`target/` 是 cargo 的编译产物，跨发布保留，只重编上次以来变化的部分。缓存里没有凭据；不发布时随时可删，删后下一次发布全量编译（约 5 分钟）。
 

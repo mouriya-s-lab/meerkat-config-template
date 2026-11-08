@@ -2,7 +2,7 @@
 #
 # Images are built and loaded onto the host by scripts/release.sh; they are never pulled. The config
 # tree of this checkout is mounted read-only; the only state kept across redeploys is the omp
-# session files and the PM repository checkout.
+# session files and the agenda repository checkout.
 #
 # - daemon: agenda queue and panels; port 7421 serves its API to the LAN/mesh and to Meerkat.
 #   It reaches meerkat-guardians on this host through host.docker.internal:7410.
@@ -11,7 +11,7 @@
 # - tunnel: connector of a Cloudflare tunnel that routes
 #   https://<council-hook-hostname>/webhook to http://app:7420.
 #
-# Do not run this Stack while a `gh webhook forward` session watches the PM repository.
+# Do not run this Stack while a `gh webhook forward` session watches the agenda repository.
 
 services:
   daemon:

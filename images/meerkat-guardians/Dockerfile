@@ -13,9 +13,9 @@ RUN git config --system credential.https://github.com.helper '!gh auth git-crede
 COPY --chmod=0755 meerkat-guardians /usr/local/bin/meerkat-guardians
 COPY plugin/ /opt/meerkat-guardians/plugin/
 COPY --chmod=0755 prepare-omp-dir.sh /opt/meerkat-guardians/scripts/prepare-omp-dir.sh
-COPY --chmod=0755 entrypoint.sh /usr/local/bin/pm-entrypoint
+COPY --chmod=0755 entrypoint.sh /usr/local/bin/meerkat-entrypoint
 COPY --chmod=0600 agent.db models.yml /root/.omp/agent/
-COPY --chmod=0600 gh-token /etc/pm/gh-token
+COPY --chmod=0600 gh-token /etc/meerkat/gh-token
 WORKDIR /var/lib/meerkat-guardians
 EXPOSE 7410
-ENTRYPOINT ["/usr/local/bin/pm-entrypoint"]
+ENTRYPOINT ["/usr/local/bin/meerkat-entrypoint"]

@@ -1,6 +1,6 @@
 app:
   listen: 0.0.0.0:7420
-  webhookSecretFile: /etc/pm/webhook-secret
+  webhookSecretFile: /etc/meerkat/webhook-secret
   daemonURL: http://daemon:7421
 daemon:
   listen: 0.0.0.0:7421
